@@ -1041,7 +1041,7 @@ exports.shouldPerformMultipleSaves = function(configuration, test) {
 
       //insert new user
       collection.save(doc, {w: 1}, function(err, r) {
-        collection.find({}, {name: 1}).limit(1).toArray(function(err, users){
+        collection.find({}, {name: 1}, {}).limit(1).toArray(function(err, users){
           var user = users[0]
 
           if(err) {

@@ -237,7 +237,7 @@ exports.shouldCorrectlyThrowErrorsWhenIllegalySizedMessages = function(configura
       }              
 
       try {
-        collection.find({}, illegalBuffer).toArray(function() {})
+        collection.find({}, illegalBuffer, {}).toArray(function() {})
       } catch(err) {
         test.ok(err.toString().indexOf("query fields") != -1);
       }              
@@ -249,7 +249,7 @@ exports.shouldCorrectlyThrowErrorsWhenIllegalySizedMessages = function(configura
       }              
 
       try {
-        collection.findOne({}, illegalBuffer, function() {})
+        collection.findOne({}, illegalBuffer, {}, function() {})
       } catch(err) {
         test.ok(err.toString().indexOf("query fields") != -1);
         db.close();
@@ -282,7 +282,7 @@ exports.shouldCorrectlyPeformQueryUsingRawSettingRawAtCollectionLevel = function
         db.bson.serializeWithBufferAndIndex(fieldsObject, false, rawFieldsObject, 0);    
 
         db.collection('shouldCorrectlyPeformQueryUsingRawSettingRawAtCollectionLevel', {raw:true}, function(err, collection) {
-          collection.find(rawQueryObject, rawFieldsObject).toArray(function(err, items) {
+          collection.find(rawQueryObject, rawFieldsObject, {}).toArray(function(err, items) {
             test.equal(1, items.length);
             test.ok(items[0] instanceof Buffer);
             var object = db.bson.deserialize(items[0]);
@@ -330,7 +330,7 @@ exports.shouldCorreclyInsertRawDocumentAndRetrieveThemSettingRawAtCollectionLeve
         test.equal(null, err);
         
         // Query the document
-        collection.find({}, {}).toArray(function(err, items) {
+        collection.find({}, {}, {}).toArray(function(err, items) {
           var objects = [];
           for(var i = 0; i < items.length; i++) {
             test.ok(Buffer.isBuffer(items[i]));
@@ -377,7 +377,7 @@ exports.shouldCorrectlyUpdateDocumentAndReturnRawSettingRawAtCollectionLevel = f
           test.equal(1, numberOfUpdated);
           
           // Query the document
-          collection.find({b:2000}, {}).toArray(function(err, items) {
+          collection.find({b:2000}, {}, {}).toArray(function(err, items) {
             var objects = [];
             for(var i = 0; i < items.length; i++) {
               test.ok(Buffer.isBuffer(items[i]));

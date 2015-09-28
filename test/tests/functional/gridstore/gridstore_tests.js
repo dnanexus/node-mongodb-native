@@ -2231,7 +2231,7 @@ exports['Should correctly append content to file and have correct chunk numbers'
                 test.equal(null, err);
 
                 var chunkCollection = gridStore.chunkCollection();
-                chunkCollection.find({files_id: fileId}, {data:0}).sort({n: 1}).toArray(function(err, chunks) {
+                chunkCollection.find({files_id: fileId}, {data:0}, {}).sort({n: 1}).toArray(function(err, chunks) {
                   test.equal(null, err);
                   test.equal(2, chunks.length);
                   test.equal(0, chunks[0].n);

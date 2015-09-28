@@ -162,11 +162,11 @@ exports.shouldCorrectlyExecuteCursorCount = function(configuration, test) {
               test.ok(count.constructor == Number);
             });
 
-            collection.find({}, {'limit':5}).count(function(err, count) {
+            collection.find({}, {}, {'limit':5}).count(function(err, count) {
               test.equal(10, count);
             });
 
-            collection.find({}, {'skip':5}).count(function(err, count) {
+            collection.find({}, {}, {'skip':5}).count(function(err, count) {
               test.equal(10, count);
             });
 
@@ -360,7 +360,7 @@ exports.shouldCorrectlyHandleLimitOnCursor = function(configuration, test) {
 
           collection.find().limit(5).toArray(function(err, items) {
             test.equal(5, items.length);
-            
+
             // Let's close the db
             db.close();
             test.done();
@@ -391,7 +391,7 @@ exports.shouldCorrectlyHandleNegativeOneLimitOnCursor = function(configuration, 
         function finished() {
           collection.find().limit(-1).toArray(function(err, items) {
             test.equal(1, items.length);
-            
+
             // Let's close the db
             db.close();
             test.done();
@@ -422,7 +422,7 @@ exports.shouldCorrectlyHandleAnyNegativeLimitOnCursor = function(configuration, 
         function finished() {
           collection.find().limit(-5).toArray(function(err, items) {
             test.equal(5, items.length);
-            
+
             // Let's close the db
             db.close();
             test.done();
@@ -985,7 +985,7 @@ exports.shouldCorrectlyRefillViaGetMoreCommand = function(configuration, test) {
 
           var total = 0;
           var i = 0;
-          var cursor = collection.find({}, {}).each(function(err, item) {
+          var cursor = collection.find({}, {}, {}).each(function(err, item) {
           if(item != null) {
             total = total + item.a;
           } else {
@@ -1007,7 +1007,7 @@ exports.shouldCorrectlyRefillViaGetMoreCommand = function(configuration, test) {
                   collection.count(function(err, count) {
                     test.equal(COUNT, count);
                     test.equal(total, total2);
-                    
+
                     // Let's close the db
                     db.close();
                     test.done();
@@ -2128,7 +2128,7 @@ exports.shouldCorrectExecuteExplainHonoringLimit = function(configuration, test)
           test.ok(result[0].n != null);
           test.ok(result[0].nscanned != null);
 
-          collection.find({_keywords:'red'},{}).limit(10).explain(function(err, result) {
+          collection.find({_keywords:'red'},{}, {}).limit(10).explain(function(err, result) {
             test.ok(result.n != null);
             test.ok(result.nscanned != null);
 
@@ -2296,10 +2296,10 @@ exports.shouldCorrectlySkipAndLimit = function(configuration, test) {
 
     collection.insert(docs, {w:1}, function(err, ids) {
 
-      collection.find({}, {OrderNumber:1}).skip(10).limit(10).toArray(function(err, items) {
+      collection.find({}, {OrderNumber:1}, {}).skip(10).limit(10).toArray(function(err, items) {
         test.equal(10, items[0].OrderNumber);
 
-        collection.find({}, {OrderNumber:1}).skip(10).limit(10).count(true, function(err, count) {
+        collection.find({}, {OrderNumber:1}, {}).skip(10).limit(10).count(true, function(err, count) {
           test.equal(10, count);
           db.close();
           test.done();
@@ -2321,7 +2321,7 @@ exports.shouldFailToTailANormalCollection = function(configuration, test) {
     for(var i = 0; i < 100; i++) docs.push({a:i, OrderNumber:i});
 
     collection.insert(docs, {w:1}, function(err, ids) {
-      collection.find({}, {tailable:true}).each(function(err, doc) {
+      collection.find({}, {}, {tailable:true}).each(function(err, doc) {
         test.ok(err instanceof Error);
         db.close();
         test.done();
@@ -2443,25 +2443,25 @@ exports['should correctly apply hint to count command for cursor'] = {
         col.ensureIndex({i:1}, function(err, r) {
           test.equal(null, err);
 
-          col.find({i:1}, {hint: "_id_"}).count(function(err, count) {
+          col.find({i:1}, {}, {hint: "_id_"}).count(function(err, count) {
             test.equal(null, err);
             test.equal(1, count);
 
-            col.find({}, {hint: "_id_"}).count(function(err, count) {
+            col.find({}, {}, {hint: "_id_"}).count(function(err, count) {
               test.equal(null, err);
               test.equal(2, count);
 
-              col.find({i:1}, {hint: "BAD HINT"}).count(function(err, count) {
+              col.find({i:1}, {}, {hint: "BAD HINT"}).count(function(err, count) {
                 test.ok(err != null);
 
                 col.ensureIndex({x:1}, {sparse:true}, function(err, r) {
                   test.equal(null, err);
 
-                  col.find({i:1}, {hint: "x_1"}).count(function(err, count) {
+                  col.find({i:1}, {}, {hint: "x_1"}).count(function(err, count) {
                     test.equal(null, err);
                     test.equal(0, count);
 
-                    col.find({}, {hint: "x_1"}).count(function(err, count) {
+                    col.find({}, {}, {hint: "x_1"}).count(function(err, count) {
                       test.equal(null, err);
                       test.equal(2, count);
 
